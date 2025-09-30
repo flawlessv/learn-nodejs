@@ -1,0 +1,9 @@
+/node_modules
+/dist
+/build
+/logs
+/tmp
+/public
+/views
+/config
+/data

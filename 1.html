@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>滚动条宽度问题复现</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* main容器 - 设置宽度1920px */
+        .main {
+            width: 1920px;
+            height: 5500px;
+            background-color: #E6E6E6;
+            overflow: auto; /* 启用滚动条 */
+            position: relative;
+        }
+        
+        /* relative容器 - 100%宽度 */
+        .relative {
+            width: 100%;
+            height: 300px;
+            background-color: #ccc;
+            position: relative;
+        }
+        
+        /* 子元素 - 100%宽度 */
+        .child {
+            width: 100%;
+            height: 200px;
+            background-color: #aaa;
+        }
+        
+        /* 强制显示滚动条的内容 */
+        /* .content {
+            width: 3000px;
+            height: 800px;
+            background-color: #ddd;
+        } */
+        
+        /* 显示尺寸的元素 */
+        .size-display {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <h2>滚动条宽度问题复现</h2>
+    
+    <main class="main" id="main">
+        <div class="relative" id="relative">
+            <div class="child" id="child"></div>
+        </div>
+        <!-- <div class="content"></div> -->
+        <div class="size-display" id="mainSize">main宽度: 计算中...</div>
+        <div class="size-display" id="relativeSize" style="bottom: 40px;">relative宽度: 计算中...</div>
+        <div class="size-display" id="childSize" style="bottom: 70px;">child宽度: 计算中...</div>
+        <div class="size-display" id="scrollbarWidth" style="bottom: 100px;">滚动条宽度: 计算中...</div>
+    </main>
+    
+    <div style="margin: 20px 0;">
+        <div id="browserInfo"></div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            // 获取元素
+            const main = document.getElementById('main');
+            const relative = document.getElementById('relative');
+            const child = document.getElementById('child');
+            
+            // 显示宽度
+            document.getElementById('mainSize').textContent = `main宽度: ${main.offsetWidth}px`;
+            document.getElementById('relativeSize').textContent = `relative宽度: ${relative.offsetWidth}px`;
+            document.getElementById('childSize').textContent = `child宽度: ${child.offsetWidth}px`;
+            
+            // 计算滚动条宽度
+            const scrollbarWidth = main.offsetWidth - relative.offsetWidth;
+            document.getElementById('scrollbarWidth').textContent = `滚动条宽度: ${scrollbarWidth}px`;
+            
+            // 显示浏览器信息
+            document.getElementById('browserInfo').innerHTML = `
+                <p><strong>浏览器信息:</strong> ${navigator.userAgent}</p>
+                <p><strong>问题说明:</strong> main的宽度是1920px，但relative盒子(width:100%)的宽度只有${relative.offsetWidth}px，
+                差值${scrollbarWidth}px正是滚动条的宽度。这就是为什么有些浏览器会出现横向滚动条的原因。</p>
+                <p><strong>原因:</strong> 当父元素(main)设置overflow:auto时，滚动条会占用内容区域的空间。
+                子元素(relative)设置width:100%时，是相对于父元素的内容区域计算宽度，不包括滚动条占用的空间。</p>
+            `;
+        };
+    </script>
+</body>
+</html>
